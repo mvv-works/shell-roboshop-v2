@@ -4,7 +4,7 @@ app_name=shipping
 source ./common.sh
 check_root
 
-MYSQL_HOST=mysql.devops550.online
+#MYSQL_HOST=mysql.devops550.online
 
 
 
@@ -15,7 +15,7 @@ systemd_setup
 dnf install mysql -y &>> $LOGS_FILE
 VALIDATE $? "Installing MySQL client"
 
-mysql -h mysql.devops550.online -u root -pRoboShop@1 -e "use cities" &>> $LOGS_FILE
+mysql -h $MYSQL_HOST -u root -pRoboShop@1 -e "use cities" &>> $LOGS_FILE
 if [ $? -ne 0 ]; then
     mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/schema.sql
     mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/app-user.sql 
