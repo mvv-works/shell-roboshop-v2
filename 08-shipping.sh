@@ -4,6 +4,8 @@ app_name=shipping
 source ./common.sh
 check_root
 
+MYSQL_HOST=mysql.devops550.online
+
 
 
 app_setup
