@@ -4,7 +4,7 @@ LOGS_FOLDER="/var/log/roboshop"
 sudo mkdir -p $LOGS_FOLDER
 sudo chown -R ec2-user:ec2-user $LOGS_FOLDER
 sudo chmod -R 755 $LOGS_FOLDER
-LOGS_FILE="$LOGS_FOLDER/0.log"
+LOGS_FILE="$LOGS_FOLDER/$0.log"
 SCRIPT_DIR=$PWD
 
 USERID=$(id -u)
@@ -40,9 +40,9 @@ print_total_time(){
 
 app_setup(){
     
-    id roboshop &>> $LOGS_FILE
+    id roboshop &>>$LOGS_FILE
     if [ $? -ne 0 ]; then
-        useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>> $LOGS_FILE
+        useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>>$LOGS_FILE
         VALIDATE $? "Creating roboshop system user"
     else
         echo -e "System user roboshop already created ... $Y Skipping $N "
@@ -54,23 +54,23 @@ app_setup(){
     rm -rf /tmp/$app_name.zip 
     VALIDATE $? "Removing $app_name zip"
 
-    mkdir -p /app &>> $LOGS_FILE
+    mkdir -p /app &>>$LOGS_FILE
     VALIDATE $? "Creating app directory"
 
-    curl -o /tmp/$app_name.zip https://roboshop-artifacts.s3.amazonaws.com/$app_name-v3.zip &>> $LOGS_FILE
+    curl -o /tmp/$app_name.zip https://roboshop-artifacts.s3.amazonaws.com/$app_name-v3.zip &>>$LOGS_FILE
     cd /app 
-    unzip /tmp/$app_name.zip &>> $LOGS_FILE
+    unzip /tmp/$app_name.zip &>>$LOGS_FILE
     VALIDATE $? "Downloaded and extracted $app_name code"
 }
 
 nodejs_setup(){
-    dnf module disable nodejs -y &>> $LOGS_FILE
-    dnf module enable nodejs:20 -y &>> $LOGS_FILE
-    dnf install nodejs -y  &>> $LOGS_FILE
+    dnf module disable nodejs -y &>>$LOGS_FILE
+    dnf module enable nodejs:20 -y &>>$LOGS_FILE
+    dnf install nodejs -y  &>>$LOGS_FILE
     VALIDATE $? "Installing NodeJS:20"
 
 
-    npm install &>> $LOGS_FILE
+    npm install &>>$LOGS_FILE
     VALIDATE $? "Installing dependencies"
 }
 
@@ -79,30 +79,30 @@ systemd_setup(){
     VALIDATE $? "Created systemctl service"
 
     systemctl daemon-reload
-    systemctl enable $app_name
+    systemctl enable $app_name &>>$LOGS_FILE
     VALIDATE $? "Enabling $app_name"
 }
 
 app_restart(){
     
-    systemctl restart $app_name &>> $LOGS_FILE
+    systemctl restart $app_name 
     VALIDATE $? "Restarting $app_name" 
 
 }
 
 java_setup(){
-    dnf install maven -y &>> $LOGS_FILE
+    dnf install maven -y &>>$LOGS_FILE
     VALIDATE $? "Installing Maven"
 
-    mvn clean package &>> $LOGS_FILE
+    mvn clean package &>>$LOGS_FILE
     mv target/shipping-1.0.jar shipping.jar
     VALIDATE $? "Installing dependencies"
 }
 
 python_setup(){
-    dnf install python3 gcc python3-devel -y &>> $LOGS_FILE
+    dnf install python3 gcc python3-devel -y &>>$LOGS_FILE
     VALIDATE $? "Installing python"
 
-    pip3 install -r requirements.txt &>> $LOGS_FILE
+    pip3 install -r requirements.txt &>>$LOGS_FILE
     VALIDATE $? "Installing dependencies"
 }
