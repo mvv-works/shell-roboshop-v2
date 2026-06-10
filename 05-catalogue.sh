@@ -17,7 +17,8 @@ VALIDATE $? "Added Mongo repo"
 dnf install mongodb-mongosh -y &>> $LOGS_FILE
 VALIDATE $? "Installed MongoDB client"
 
-INDEX=$(mongosh --host mongodb.devops550.online --quiet \ --eval 'db.getMongo().getDBNames().indexOf("catalogue")')
+
+INDEX=$(mongosh --host mongodb.devops550.online --eval 'db.getMongo().getDBNames().indexOf("catalogue")')
 
 if [ $INDEX -lt 0 ]; then 
     mongosh --host mongodb.devops550.online </app/db/master-data.js &>> $LOGS_FILE
